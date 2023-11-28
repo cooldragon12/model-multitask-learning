@@ -1,0 +1,30 @@
+[
+ {
+  "epochs": 50,
+  "batch_size": 16,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "num_layers": 1,
+  "dropout": 0.1,
+  "pre_train": "bert-base-uncased",
+  "accuracy_toxicity": 0.0,
+  "accuracy_emotion": 0.0,
+  "loss_average": 3.925915845870972,
+  "toxicity_loss_average": 2.7950956216539655,
+  "emotion_loss_average": 1.1308202236039298
+ },
+ {
+  "epochs": 50,
+  "batch_size": 16,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "num_layers": 1,
+  "dropout": 0.2,
+  "pre_train": "bert-base-uncased",
+  "accuracy_toxicity": 0.0,
+  "accuracy_emotion": 0.0,
+  "loss_average": 3.9372525724683474,
+  "toxicity_loss_average": 2.8270845056261336,
+  "emotion_loss_average": 1.1101680642536707
+ }
+]
