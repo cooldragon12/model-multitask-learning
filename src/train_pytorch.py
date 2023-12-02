@@ -7,22 +7,47 @@ function includes the finetuning and training of the model.
 from datetime import datetime
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from transformers import BertTokenizer
+from transformers import BertTokenizer, TFBertModel
 import torch.nn as nn
 import torch.optim as optim
 import torch
-
+from sklearn.preprocessing import OneHotEncoder
+from keras.optimizers import Adam
 from build.pytorch.model import MultiTaskModel
 from build.pytorch.preprocessing import ValorantChatDataset
 from torch.utils.data import DataLoader
-from utils.config import BASE_PATH, learning_rate, batch_size, num_epochs, num_layers, dropout, pre_trained_language_model, weight_decay
-from utils.utils import train_fn, evaluate_fn, select_device, GridSearch
+from build.tensorflow_model.model import create_multitask_model_with_bert
+from utils.config import (
+    BASE_PATH, 
+    learning_rate, 
+    batch_size, 
+    num_epochs, 
+    num_layers, 
+    dropout, 
+    dropout_bert,
+    pre_trained_language_model, 
+    weight_decay,
+    TOXICITY_LABELS,
+    EMOTIONS_LABELS
+    )
 
+from build.tensorflow_model.preprocessing import encode_texts
 
+from utils.utils import (
+                        show_accuracy_graph,
+                        show_emotion_accuracy_graph,
+                        show_toxicity_accuracy_graph,
+                        split_train_test_valid, 
+                        train_fn, 
+                        evaluate_fn, 
+                        select_device, 
+                        GridSearch,
+                        show_loss_graph,
+                        show_emotion_loss_graph,
+                        show_toxicity_loss_graph,
+                        )
 
-
-
-def run_training_with_grid_search():
+def run_training_with_grid_search_pytorch():
     """
     Run the model with grid search
 
@@ -50,7 +75,7 @@ def run_training_with_grid_search():
     except Exception as e:
         raise e
 
-def run_training_with_hyperparameter_tuning(epochs: int, batch_size: int, learning_rate: float, num_layers: int, dropout: float, weight_decay: float = 0):
+def run_training_with_hyperparameter_tuning_pytorch(epochs: int, batch_size: int, learning_rate: float, num_layers: int, dropout: float, weight_decay: float = 0):
     try: 
         device = select_device('dml')
         TRANSFORMER = 'bert-base-uncased'

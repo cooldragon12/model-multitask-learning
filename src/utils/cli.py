@@ -7,6 +7,7 @@ def get_cli_argument():
     """
     parser = argparse.ArgumentParser(description='MultiTask model - Train, Try, Evaluate')
     
+    parser.add_argument('-w', '--where', choices=['pytorch', 'tensorflow'], default='tensorflow', help='Where to run the model (default: tensorflow)')
     parser.add_argument('-t','--train', action='store_true', help='Train the model')
     parser.add_argument('-d','--data-path', default='dataset/preprocessed_df.pkl', help='Path to the preprocessed dataframe')
     parser.add_argument('-r','--run', action='store_true', help='Try the model')

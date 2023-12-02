@@ -1,92 +1,86 @@
-
-from multiprocessing import pool
 import tensorflow as tf
-from transformers import TFBertModel
-from keras.layers import Input, Dropout, LSTM, Dense, Concatenate, Bidirectional
+from transformers import TFRobertaModel, RobertaConfig
 from keras.models import Model
-# class MultiTaskModel(tf.keras.Model):
-#     def __init__(self, dropout=0.5, hidden_size=128, input_size=768, num_layers=1):
-#         super(MultiTaskModel, self).__init__()
-#         self.num_layers = num_layers
-#         self.input_size = input_size
+from keras.layers import Input, Bidirectional, LSTM, Dense
 
-#         # Backbone of the model: BERT
-#         self.bert_embedded = TFBertModel.from_pretrained('bert-base-uncased')
-#         self.hidden_size = self.bert_embedded.config.hidden_size
 
-#         # Dropout
-#         self.dropout = Dropout(dropout)
+def create_multitask_model_with_bert(y_toxicity, y_emotion, bert_backbone, max_token_length=100, lstm_dropout=0.2, layers=(64, 32)):
+    """
+    Creates a model using BERT as backbone and Bi-LSTM layers.
 
-#         # Classifiers
-#         self.shared_classifier = Bidirectional(LSTM(
-#             units=self.hidden_size,
-#             dropout=dropout,
-#             stateful=True
-#         ))
+    Args:
+        y_toxicity (np.ndarray): One-hot encoded toxicity labels.
+        y_emotion (np.ndarray): One-hot encoded emotion labels.
+        max_token_length (int): The maximum length of input tokens.
+        bert_dropout (float, optional): Dropout rate for BERT layer. Defaults to 0.2.
+        lstm_dropout (float, optional): Dropout rate for LSTM layers. Defaults to 0.2.
+        layers (tuple, optional): Number of units in each LSTM layer. Defaults to (64, 32).
 
-#         self.toxicity_classifier = Dense(1, activation='softmax')
-#         self.emotion_classifier = Dense(1,activation='softmax')
+    Returns:
+        tf.keras.Model: The created model.
 
-#     def call(self, inputs, attention_mask):
-#         # Backbone Layer
-#         _, pooled_output = self.bert_embedded(inputs, attention_mask=attention_mask)
-
-#         # Use the features from the pooled output from BERT
-#         pooled_output = self.dropout(pooled_output)
-
-#         # Shared LSTM Classifier
-#         _, forward_h, _ = self.shared_classifier(pooled_output)
-#         _, backward_h, _ = self.shared_classifier(pooled_output, initial_state=[forward_h])
-
-#         # Concatenate forward and backward hidden states
-#         concatenated_h = Concatenate()([forward_h, backward_h])
-
-#         # Apply classifiers
-#         toxicity_y = self.toxicity_classifier(concatenated_h)
-#         emotion_y = self.emotion_classifier(concatenated_h)
-
-#         return toxicity_y, emotion_y
-
-def getMultiTaskModel(backbone=None, dropout=0.5, hidden_size=128, input_size=768, num_layers=1):
-
-    input_ids = Input(shape=(input_size,), dtype="int32",
-                                        name="input_ids")
-    attention_mask = Input(shape=(input_size,), dtype="int32",
-                                    name="attention_mask")
-    segment_ids = Input(shape=(input_size,), dtype="int32",
-                                        name="segment_ids")
-
-    # Backbone Layer
-    # Input Layers
-    # BERT Layer
-    bert_model = TFBertModel.from_pretrained('bert-base-uncased')
-    output = bert_model([input_wids, attention_mask, segment_ids]) # type: ignore
-    pooled_output = output[1] # type: ignore
-    pooled_output = Dropout(dropout)(pooled_output)
-    # Use of BI-LSTM Classifier
-    shared_classifier = Bidirectional(LSTM(
-        units=hidden_size,
-        dropout=dropout,
-        stateful=True,
+    """
+    # Create the input layer
+    input_ids = Input(shape=(max_token_length,), dtype=tf.int32, name='input_ids')
     
-    ), name='shared_classifier')
+    # Configure BERT with the specified dropout rate
+    
+    # Load the BERT model with the base uncased configuration
+    bert = bert_backbone.from_pretrained('bert-base-uncased')
+    
+    # Get the BERT pooled output
+    pooled_output = bert(input_ids)[1] # type: ignore
 
-    # Shared LSTM Classifier Layer
-    bi_lstm_output = shared_classifier(pooled_output)
+    # Apply Bi-LSTM layer with return_sequences=True to get sequence outputs
+    bi_lstm = Bidirectional(LSTM(layers[0], return_sequences=True, dropout=lstm_dropout))(pooled_output)
+    
+    # Apply another Bi-LSTM layer without return_sequences to get final output
+    bi_lstm = Bidirectional(LSTM(layers[1]))(bi_lstm)
+    
+    # Output layer for emotion classification
+    output_emotion = Dense(y_emotion.shape[1], activation='softmax', name='emotion_output')(bi_lstm)
+    
+    # Output layer for toxicity classification
+    output_toxicity = Dense(y_toxicity.shape[1], activation='softmax', name='toxicity_output')(bi_lstm)
 
-
-    # Task-specific layers
-    emotion_output = Dense(NUM_EMOTION_CLASSES, activation='sigmoid', name='emotion_output')(bi_lstm_output)
-
-    toxicity_input = Concatenate(name="concatination_of_blstm_emotion")([bi_lstm_output, emotion_output])
-
-    toxicity_output = Dense(NUM_TOXICITY_CLASSES, activation='sigmoid', name='toxicity_output')(toxicity_input)
-
-    # Model
-    model = Model(inputs=[input_ids, attention_mask, segment_ids], outputs=[emotion_output, toxicity_output])
+    # Create the model with input and output layers
+    model = Model(inputs=input_ids, outputs=[output_emotion, output_toxicity])
 
     return model
 
+def create_multitask_model_with_roberta(y_toxicity, y_emotion, max_token_length, bert_dropout=0.2, lstm_dropout=0.2, layers=(64, 32)):
+    """
+    Creates a model using RoBERTa as backbone and Bi-LSTM layers.
 
-model = getMultiTaskModel()
-model.summary()
+    Returns:
+        tf.keras.Model: The created model.
+
+    """
+    # Create the input layer
+    input_ids = Input(shape=(max_token_length,), dtype=tf.int32, name='input_ids')
+    
+    # Configure RoBERTa with the specified dropout rate
+    config = RobertaConfig(dropout=bert_dropout)
+    
+    # Load the RoBERTa model with the base uncased configuration
+    roberta = TFRobertaModel.from_pretrained('roberta-base', config=config)
+    
+    # Get the RoBERTa pooled output
+    pooled_output = roberta(input_ids)[1] # type: ignore
+
+    # Apply Bi-LSTM layer with return_sequences=True to get sequence outputs
+    bi_lstm = Bidirectional(LSTM(layers[0], return_sequences=True, dropout=lstm_dropout))(pooled_output)
+    
+    # Apply another Bi-LSTM layer without return_sequences to get final output
+    bi_lstm = Bidirectional(LSTM(layers[1]))(bi_lstm)
+    
+    # Output layer for emotion classification
+    output_emotion = Dense(y_emotion.shape[1], activation='softmax', name='emotion_output')(bi_lstm)
+    
+    # Output layer for toxicity classification
+    output_toxicity = Dense(y_toxicity.shape[1], activation='softmax', name='toxicity_output')(bi_lstm)
+
+    # Create the model with input and output layers
+    model = Model(inputs=input_ids, outputs=[output_emotion, output_toxicity])
+
+    return model

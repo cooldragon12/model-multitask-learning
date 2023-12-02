@@ -1,2 +1,6 @@
 /**env**
 **/__pycache__**
+**/checkpoints**
+**.h5
+**.keras
+**/logs

@@ -5,16 +5,17 @@ BASE_PATH = Path(__file__).parent.parent.parent
 """`multi-task model/`"""
 
 # Hyperparameters
-learning_rate = [0.01, 0.1, 0.15]
+learning_rate = [2e-5, 3e-5, 1e-4]
 weight_decay = [1e-4, 1e-3, 1e-2, 1e-1, 5e-5,5e-4]
-batch_size = [16, 32]
-num_epochs = [50, 100, 200]
-num_layers = [1, 2, 3]
+batch_size = [32, 64]
+num_epochs = [50, 100]
+num_layers = [(64, 32), (128, 64), (256, 128)]
 dropout = [0.2, 0.3, 0.4, 0.5]
-pre_trained_language_model = ['bert-base-uncased', 'roberta-base']
+dropout_bert = [0.2, 0.3, 0.4, 0.5]
+pre_trained_language_model = ['bert-base-uncased']
 
 
-# Metrics
+# Metrics for Pytorch =========================================================
 accuracy_toxicity = Accuracy(task="multiclass", num_classes=17)
 accuracy_emotion = Accuracy(task="multiclass", num_classes=3)
 
@@ -32,5 +33,30 @@ confusion_matrix_emotion = ConfusionMatrix(task="multiclass",num_classes=3)
 
 AUROC_toxicity = AUROC(task="multiclass",num_classes=17)
 AUROC_emotion = AUROC(task="multiclass",num_classes=3)
+# =============================================================================
 
-# Path: src/utils/config.py
+
+# Use on Path: src/build/tensorflow_model/preprocessing.py
+# Use on Path: src/build/tensorflow_model/model.py
+# Use on Path: src/build/pytorch/model.py
+# Use on Path: src/build/pytorch/preprocessing.py
+EMOTIONS_LABELS = ['positive', 'negative', 'neutral']
+TOXICITY_LABELS = [
+        'positive',
+        'neutral',
+        'cyberbullying',
+        'sarcasm',
+        'blaming others',
+        'EBR complaints',
+        'SPG complaints',
+        'sexism',
+        'male preserve',
+        'RNG complaints',
+        'Game complaints',
+        'ableism',
+        'racism',
+        'ageism',
+        'Gamesplaining',
+        'Map complaints',
+        'MM complaints'
+        ]

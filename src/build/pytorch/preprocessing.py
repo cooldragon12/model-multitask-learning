@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 import torch.nn.functional as F
+from utils.config import EMOTIONS_LABELS, TOXICITY_LABELS
 MAX_LEN = 256 # Define the maximum length of tokenized texts
 
 class ValorantChatDataset(Dataset):
@@ -20,26 +21,7 @@ class ValorantChatDataset(Dataset):
 
     Reference: https://niteshkumardew11.medium.com/fine-tuning-bert-base-using-pytorch-for-sentiment-analysis-c44a3ce79091
     """
-    EMOTIONS_LABELS = ['positive', 'negative', 'neutral']
-    TOXICITY_LABELS = [
-        'positive',
-        'neutral',
-        'cyberbullying',
-        'sarcasm',
-        'blaming others',
-        'EBR complaints',
-        'SPG complaints',
-        'sexism',
-        'male preserve',
-        'RNG complaints',
-        'Game complaints',
-        'ableism',
-        'racism',
-        'ageism',
-        'Gamesplaining',
-        'Map complaints',
-        'MM complaints'
-        ]
+    
     def __init__(self, chats, e_labels, t_labels,tokenizer,  max_len=256):
         self.tokenizer = tokenizer
         self.chats = chats # Text chat
@@ -74,8 +56,8 @@ class ValorantChatDataset(Dataset):
             return_tensors='pt',
             truncation=True,
         )
-        emotion_label = (self.EMOTIONS_LABELS.index(self.e_labels_unencoded[index]))
-        toxicity_label = (self.TOXICITY_LABELS.index(self.t_labels_unencoded[index]))
+        emotion_label = (EMOTIONS_LABELS.index(self.e_labels_unencoded[index]))
+        toxicity_label = (TOXICITY_LABELS.index(self.t_labels_unencoded[index]))
 
         # e_labels = self.one_hot_encoder_emotion.transform(np.array(self.e_labels_unencoded[index]).reshape(-1,1))
         # t_labels = self.one_hot_encoder_toxicity.transform(np.array(self.t_labels_unencoded[index]).reshape(-1,1))

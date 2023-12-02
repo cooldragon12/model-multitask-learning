@@ -424,20 +424,20 @@ Test F1 Score - Emotion: {f1e}
                                         f.write(str(self.scores))
 
                                     # Save graph of the losses
-                                    show_loss_graph(
-                                        losses,
-                                        toxicity_losses,
-                                        emotion_losses,
-                                        f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
-                                    )
-                                    show_emotion_loss_graph(
-                                        emotion_losses,
-                                        f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
-                                    )
-                                    show_toxicity_loss_graph(
-                                        toxicity_losses,
-                                        f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
-                                    )
+                                    # show_loss_graph(
+                                    #     losses,
+                                    #     toxicity_losses,
+                                    #     emotion_losses,
+                                    #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # )
+                                    # show_emotion_loss_graph(
+                                    #     emotion_losses,
+                                    #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # )
+                                    # show_toxicity_loss_graph(
+                                    #     toxicity_losses,
+                                    #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # )
                                     # Save a checkpoint
                                     save_checkpoint(
                                         model.state_dict(),
@@ -445,57 +445,122 @@ Test F1 Score - Emotion: {f1e}
                                     )
 
 
-def show_loss_graph(losses, toxicity_losses, emotion_losses, title: str):
-    """
-    Shows the graph of the losses, save in photo
-    """
-    plt.figure(figsize=(10, 5))
-    plt.plot(losses, label="Total Loss")
-    plt.plot(toxicity_losses, label="Toxicity Loss")
-    plt.plot(emotion_losses, label="Emotion Loss")
-    plt.xlabel("Epochs")
-    plt.ylabel("Loss")
-    plt.title(title)
-    plt.legend()
-    # Filename <datetime>_loss_graph.png
+# def show_loss_graph(losses, toxicity_losses, emotion_losses, title: str):
+#     """
+#     Shows the graph of the losses, save in photo
+#     """
+#     plt.figure(figsize=(10, 5))
+#     plt.plot(losses, label="Total Loss")
+#     plt.plot(toxicity_losses, label="Toxicity Loss")
+#     plt.plot(emotion_losses, label="Emotion Loss")
+#     plt.xlabel("Epochs")
+#     plt.ylabel("Loss")
+#     plt.title(title)
+#     plt.legend()
+#     # Filename <datetime>_loss_graph.png
 
-    plt.savefig(
-        f'{BASE_PATH}/logs/checkpoint_{title}/{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
-    )
-
-
-def show_emotion_loss_graph(emotion_losses, title: str):
-    """
-    Shows the graph of the losses, save in photo
-    """
-
-    plt.figure(figsize=(10, 5))
-    plt.plot(emotion_losses, label="Emotion Loss")
-    plt.xlabel("Epochs")
-    plt.ylabel("Loss")
-    plt.legend()
-    plt.title(title)
-    # Filename <datetime>_loss_graph.png
-    plt.savefig(
-        f'{BASE_PATH}/logs/checkpoint_{title}/{datetime.now().strftime("%Y%m%d%H%M%S")}_emotion_loss_graph.png'
-    )
+#     plt.savefig(
+#         f'{BASE_PATH}/logs/checkpoint_{title}/{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
+#     )
 
 
-def show_toxicity_loss_graph(toxicity_losses, title: str):
+def show_loss_graph(loss, val_losses, title: str):
     """
     Shows the graph of the losses, save in photo
     """
 
-    plt.plot(toxicity_losses, label="Toxicity Loss")
+    plt.figure()
+    plt.plot(loss, label="Loss")
+    plt.plot(val_losses, label="val Loss")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
     plt.title(title)
     # Filename <datetime>_loss_graph.png
     plt.savefig(
-        f'{BASE_PATH}/logs/checkpoint_{title}/{datetime.now().strftime("%Y%m%d%H%M%S")}_toxicity_loss_graph.png'
+        f'{BASE_PATH}/logs/losses/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
     )
 
+
+def show_toxicity_loss_graph(toxicity_loss,toxicity_val_loss, title: str):
+    """
+    Shows the graph of the losses, save in photo
+    """
+    plt.figure()
+    plt.plot(toxicity_loss, label="Tocixity Loss")
+    plt.plot(toxicity_val_loss, label="Tocixity val Loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.title(title)
+    # Filename <datetime>_loss_graph.png
+    plt.savefig(
+        f'{BASE_PATH}/logs/losses/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
+    )
+
+def show_emotion_loss_graph(emotion_loss,emotion_val_loss, title: str):
+    """
+    Shows the graph of the losses, save in photo
+    """
+    plt.figure()
+    plt.plot(emotion_loss, label="Emotion Loss")
+    plt.plot(emotion_val_loss, label="Emotion val Loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.title(title)
+    # Filename <datetime>_loss_graph.png
+    plt.savefig(
+        f'{BASE_PATH}/logs/losses/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
+    )
+
+def show_accuracy_graph(accuracy, val_accuracy, title: str):
+    """
+    Shows the graph of the accuracy, save in photo
+    """
+    plt.figure()
+    plt.plot(accuracy, label="Accuracy")
+    plt.plot(val_accuracy, label="val Accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.legend()
+    plt.title(title)
+    # Filename <datetime>_loss_graph.png
+    plt.savefig(
+        f'{BASE_PATH}/logs/accuracy/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_accuracy_graph.png'
+    )
+
+def show_toxicity_accuracy_graph(toxicity_accuracy, toxicity_val_accuracy, title: str):
+    """
+    Shows the graph of the accuracy, save in photo
+    """
+    plt.figure()
+    plt.plot(toxicity_accuracy, label="Toxicity Accuracy")
+    plt.plot(toxicity_val_accuracy, label="Toxicity val Accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.legend()
+    plt.title(title)
+    # Filename <datetime>_loss_graph.png
+    plt.savefig(
+        f'{BASE_PATH}/logs/accuracy/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_accuracy_graph.png'
+    )
+
+def show_emotion_accuracy_graph(emotion_accuracy, emotion_val_accuracy, title: str):
+    """
+    Shows the graph of the accuracy, save in photo
+    """
+    plt.figure()
+    plt.plot(emotion_accuracy, label="Emotion Accuracy")
+    plt.plot(emotion_val_accuracy, label="Emotion val Accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.legend()
+    plt.title(title)
+    # Filename <datetime>_loss_graph.png
+    plt.savefig(
+        f'{BASE_PATH}/logs/accuracy/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_accuracy_graph.png'
+    )
 
 def calculate_accuracy(y_true, y_pred):
     """
@@ -508,7 +573,15 @@ def calculate_accuracy(y_true, y_pred):
     )
     return (y_true == y_pred).sum() / float(len(y_true))
 
+def save_to_json(scores, filename):
+    """
+    Saves the scores to a json file
+    """
+    import json
 
+    with open(filename, "w") as f:
+        json.dump(scores, f)
+    
 ## deprecated
 
 # def train_fn(model, criterion,optimizer,data_loader,device, epoch, total_epoch):

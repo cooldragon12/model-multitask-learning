@@ -1,3 +1,4 @@
+import re
 from torch.autograd import Variable
 import torch
 from transformers import BertModel, RobertaModel
@@ -85,7 +86,7 @@ class MultiTaskModel(nn.Module):
             torch.Tensor: Pooled output tensor of shape (batch_size, hidden_size).
         """
         # Run backbone layer
-        outputs = self.bert_embedded(inputs, attention_mask=attention_mask, return_dict=False)  # type: ignore
+        outputs = self.bert_embedded(inputs, return_dict=False)  # type: ignore
         pooled_output = outputs[1]
         pooled_output = self.dropout(pooled_output)
         return pooled_output
