@@ -22,7 +22,7 @@ def main(*args):
             else:
                 print("Starting training with default hyperparameters")
                 try:
-                    train_with_hyperparameter(30, 64, 1e-4, 64, 0.3)
+                    train_with_hyperparameter(27, 120, 1e-4, 32, 0.6)
                 except Exception as e:
                     raise Exception("Error in running the hyperparameter:", e)
         elif args[0].run:

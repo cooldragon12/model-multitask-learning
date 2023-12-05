@@ -470,12 +470,12 @@ def show_loss_graph(loss, val_losses, title: str):
     """
 
     plt.figure()
-    plt.plot(loss, label="Loss")
+    plt.plot(loss, label="train Loss")
     plt.plot(val_losses, label="val Loss")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
-    plt.title(title)
+    plt.title("Training /Validation Loss")
     # Filename <datetime>_loss_graph.png
     plt.savefig(
         f'{BASE_PATH}/logs/losses/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
@@ -492,7 +492,7 @@ def show_toxicity_loss_graph(toxicity_loss,toxicity_val_loss, title: str):
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
-    plt.title(title)
+    plt.title("Toxicity Training /Validation Loss")
     # Filename <datetime>_loss_graph.png
     plt.savefig(
         f'{BASE_PATH}/logs/losses/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
@@ -508,7 +508,7 @@ def show_emotion_loss_graph(emotion_loss,emotion_val_loss, title: str):
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
-    plt.title(title)
+    plt.title("Emotion Training /Validation Loss")
     # Filename <datetime>_loss_graph.png
     plt.savefig(
         f'{BASE_PATH}/logs/losses/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_loss_graph.png'
@@ -524,7 +524,7 @@ def show_accuracy_graph(accuracy, val_accuracy, title: str):
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.title(title)
+    plt.title("Accuracy model")
     # Filename <datetime>_loss_graph.png
     plt.savefig(
         f'{BASE_PATH}/logs/accuracy/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_accuracy_graph.png'
@@ -540,7 +540,7 @@ def show_toxicity_accuracy_graph(toxicity_accuracy, toxicity_val_accuracy, title
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.title(title)
+    plt.title("Accuracy Toxicity")
     # Filename <datetime>_loss_graph.png
     plt.savefig(
         f'{BASE_PATH}/logs/accuracy/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_accuracy_graph.png'
@@ -556,7 +556,7 @@ def show_emotion_accuracy_graph(emotion_accuracy, emotion_val_accuracy, title: s
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
     plt.legend()
-    plt.title(title)
+    plt.title("Accuracy Emotion")
     # Filename <datetime>_loss_graph.png
     plt.savefig(
         f'{BASE_PATH}/logs/accuracy/{title}_{datetime.now().strftime("%Y%m%d%H%M%S")}_accuracy_graph.png'
