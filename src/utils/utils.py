@@ -581,103 +581,26 @@ def save_to_json(scores, filename):
 
     with open(filename, "w") as f:
         json.dump(scores, f)
-    
-## deprecated
 
-# def train_fn(model, criterion,optimizer,data_loader,device, epoch, total_epoch):
-#     """
-#     Trains the model for one epoch on the training set
-#     """
-#     progress_bar = tqdm.tqdm(data_loader, desc='Epoch {:1d}/{:2d}'.format(epoch, total_epoch))
-#     losses = []
-#     model.train()
-#     for batch in progress_bar:
-#         input_ids = batch['input_ids'].to(device)
-#         attention_mask = batch['attention_mask'].to(device)
-#         toxicity_labels = batch['toxicity_labels'].to(device)
-#         emotion_labels = batch['emotion_labels'].to(device)
 
-#         optimizer.zero_grad()
-#         toxicity_logits, emotion_logits, _, _ = model(input_ids, attention_mask)
+def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity):
+    """
+    Log the hyperparameters to a json file
+    """
+    from datetime import datetime
+    import json
+    with open(f"{BASE_PATH}/logs/hyperparameters.json", "w") as f:
+        json.dump(
+            {
+                "epoch": epoch,
+                "batch_size": batch_size,
+                "learning_rate": learning_rate,
+                "lstm_layers": lstm_layers,
+                "dropout": dropout,
+                "l2_emotion": l2_emotion,
+                "l2_toxicity": l2_toxicity,
+                "time_applied": datetime.now().strftime("%Y%m%d%H%M%S"),
+            },
+            f,
+        )
 
-#         # Calculate Loss
-#         toxicity_loss = criterion(toxicity_logits, toxicity_labels)
-#         emotion_loss = criterion(emotion_logits, emotion_labels)
-#         loss = toxicity_loss + emotion_loss
-
-#         # Backpropagation
-#         loss.backward()
-#         optimizer.step()
-
-#         # Print Loss
-#         losses.append(loss.item())
-#     # if epoch % 10 == 0:
-#     #     save_checkpoint({
-#     #         'epoch': epoch + 1,
-#     #         'state_dict': model.state_dict(),
-#     #         'optimizer': optimizer.state_dict(),
-#     #         }, filename=f'checkpoint_{epoch}.pth.tar')
-#     print("Loss: ", sum(losses)/len(losses))
-
-# def test_fn(model, data_loader, device):
-#     """
-#     Tests the model on the test set
-#     """
-#     model.eval()
-#     with torch.no_grad():
-#         for batch in data_loader:
-#             input_ids = batch['input_ids'].to(device)
-#             attention_mask = batch['attention_mask'].to(device)
-#             toxicity_labels = batch['toxicity_labels'].to(device)
-#             emotion_labels = batch['emotion_labels'].to(device)
-#             toxicity_logits, emotion_logits, toxicity_probs, emotion_probs = model(input_ids, attention_mask)
-#             print("Toxicity Logits: ", toxicity_logits)
-#             print("Toxicity Labels: ", toxicity_labels)
-#             print("Toxicity Probs: ", toxicity_probs)
-#             print("Emotion Logits: ", emotion_logits)
-#             print("Emotion Labels: ", emotion_labels)
-#             print("Emotion Probs: ", emotion_probs)
-#             break
-
-# class GridSearch:
-#     """
-#     Creating a grid search for the hyperparameters
-#     """
-#     def __init__(self,train_set,test_set,num_epochs:List[int], batch_size:List[int], learning_rate:List[float], num_layers:List[int], dropout:List[float]):
-#         self.train_set = train_set
-#         self.test_set = test_set
-#         self.num_epochs = num_epochs
-#         self.batch_size = batch_size
-#         self.learning_rate = learning_rate # learning rate
-#         self.num_layers = num_layers # number of layers
-#         self.dropout = dropout # dropout rate
-#     def fit(self):
-#         """
-#         Fits the model
-#         """
-#         for epochs in self.num_epochs:
-#             for batch in self.batch_size:
-#                 for lr in self.learning_rate:
-#                     for layer in self.num_layers:
-#                         for drop in self.dropout:
-
-#                                 print("Training the model with the following hyperparameters: ")
-#                                 print("Epochs: ", epochs)
-#                                 print("Batch Size: ", batch)
-#                                 print("Learning Rate: ", lr)
-#                                 print("Number of Layers: ", layer)
-#                                 print("Dropout: ", drop)
-
-#                                 print("====================================")
-#                                 # Initialize the model
-#                                 model = MultiTaskModel(dropout=drop, num_layers=layer)
-#                                 print(model.hidden_size)
-#                                 criterion = nn.CrossEntropyLoss()
-#                                 optimizer = optim.Adam(model.parameters(), lr=lr)
-#                                 # Data Loaders
-#                                 train_dataloader = DataLoader(self.train_set, batch_size=batch, shuffle=True)
-#                                 test_dataloader = DataLoader(self.test_set, batch_size=batch, shuffle=True)
-
-#                                 for epoch in range(1, epochs + 1):
-#                                     train_fn(model, criterion, optimizer, train_dataloader,device, epoch, epochs)
-#                                     # Evaluate the model on the test set

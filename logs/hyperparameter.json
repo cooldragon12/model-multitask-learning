@@ -1,0 +1,10 @@
+{
+    "epoch": 27,
+                "batch_size": 120,
+                "learning_rate": 1e-4,  
+                "lstm_layers": 32,
+                "dropout": 0.6,
+                "l2_emotion": 0.03,
+                "l2_toxicity": 0.03,
+                "time_applied": "2023-12-06 19:00:00"
+}
