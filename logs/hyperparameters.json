@@ -17,7 +17,7 @@
         "dropout": 0.6,
         "l2_emotion": 0.035,
         "l2_toxicity": 0.03,
-        "time_applied": "20231207003915"
+        "time_applied": "2023-12-07-00:39:15"
     },
     {
         "epoch": 35,
@@ -27,6 +27,6 @@
         "dropout": 0.6,
         "l2_emotion": 0.032,
         "l2_toxicity": 0.028,
-        "time_applied": "20231207182959"
+        "time_applied": "2023-12-07-18:29:59"
        }
 ]

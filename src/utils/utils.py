@@ -10,20 +10,20 @@ import torch.nn as nn
 import torch_directml as td
 from transformers import BertTokenizer, RobertaTokenizer
 import matplotlib.pyplot as plt
-from utils.config import (
-    accuracy_emotion,
-    accuracy_toxicity,
-    precision_emotion,
-    precision_toxicity,
-    recall_emotion,
-    recall_toxicity,
-    f1_emotion,
-    f1_toxicity,
-    confusion_matrix_emotion,
-    confusion_matrix_toxicity,
-    AUROC_emotion,
-    AUROC_toxicity,
-)
+# from utils.config import (
+#     accuracy_emotion,
+#     accuracy_toxicity,
+#     precision_emotion,
+#     precision_toxicity,
+#     recall_emotion,
+#     recall_toxicity,
+#     f1_emotion,
+#     f1_toxicity,
+#     confusion_matrix_emotion,
+#     confusion_matrix_toxicity,
+#     AUROC_emotion,
+#     AUROC_toxicity,
+# )
 
 from build.pytorch.model import MultiTaskModel
 from build.pytorch.preprocessing import ValorantChatDataset
@@ -110,74 +110,74 @@ def train_fn(model, criterion, optimizer, data_loader, device, epoch, total_epoc
     )
 
 
-def evaluate_fn(model, data_loader, device):
-    """
-    Evaluates the model on the test set
+# def evaluate_fn(model, data_loader, device):
+#     """
+#     Evaluates the model on the test set
 
-    Returns:
-        accuracy_toxicity: Accuracy of the model on the toxicity task
-        accuracy_emotion: Accuracy of the model on the emotion task
-    """
-    model.eval()
-    all_toxicity_probs = []
-    all_emotion_probs = []
-    all_toxicity_labels = []
-    all_emotion_labels = []
+#     Returns:
+#         accuracy_toxicity: Accuracy of the model on the toxicity task
+#         accuracy_emotion: Accuracy of the model on the emotion task
+#     """
+#     model.eval()
+#     all_toxicity_probs = []
+#     all_emotion_probs = []
+#     all_toxicity_labels = []
+#     all_emotion_labels = []
 
-    progress_bar = tqdm.tqdm(data_loader, desc="Evaluating the model")
+#     progress_bar = tqdm.tqdm(data_loader, desc="Evaluating the model")
 
-    with torch.no_grad():
-        for batch in progress_bar:
-            input_ids = batch["input_ids"].to(device)
-            attention_mask = batch["attention_mask"].to(device)
-            toxicity_labels = batch["toxicity_labels"].to(device)
-            emotion_labels = batch["emotion_labels"].to(device)
+#     with torch.no_grad():
+#         for batch in progress_bar:
+#             input_ids = batch["input_ids"].to(device)
+#             attention_mask = batch["attention_mask"].to(device)
+#             toxicity_labels = batch["toxicity_labels"].to(device)
+#             emotion_labels = batch["emotion_labels"].to(device)
 
-            toxicity_logits, emotion_logits, toxicity_probs, emotion_probs = model(
-                input_ids, attention_mask
-            )
+#             toxicity_logits, emotion_logits, toxicity_probs, emotion_probs = model(
+#                 input_ids, attention_mask
+#             )
 
-            all_toxicity_probs.extend(toxicity_probs.cpu().numpy())
-            all_emotion_probs.extend(emotion_probs.cpu().numpy())
-            all_toxicity_labels.extend(toxicity_labels.cpu().numpy())
-            all_emotion_labels.extend(emotion_labels.cpu().numpy())
+#             all_toxicity_probs.extend(toxicity_probs.cpu().numpy())
+#             all_emotion_probs.extend(emotion_probs.cpu().numpy())
+#             all_toxicity_labels.extend(toxicity_labels.cpu().numpy())
+#             all_emotion_labels.extend(emotion_labels.cpu().numpy())
 
-    # Calculate evaluation scores (you can use your own evaluation metric)
-    # For example, you can use accuracy, F1 score, etc.
-    # Here, I'm using accuracy as an example.
-    at = accuracy_toxicity(
-        torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
-    )
-    ae = accuracy_emotion(
-        torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
-    )
+#     # Calculate evaluation scores (you can use your own evaluation metric)
+#     # For example, you can use accuracy, F1 score, etc.
+#     # Here, I'm using accuracy as an example.
+#     at = accuracy_toxicity(
+#         torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
+#     )
+#     ae = accuracy_emotion(
+#         torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
+#     )
 
-    pt = precision_toxicity(
-        torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
-    )
-    pe = precision_emotion(
-        torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
-    )
+#     pt = precision_toxicity(
+#         torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
+#     )
+#     pe = precision_emotion(
+#         torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
+#     )
 
-    rt = recall_toxicity(
-        torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
-    )
-    re = recall_emotion(
-        torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
-    )
+#     rt = recall_toxicity(
+#         torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
+#     )
+#     re = recall_emotion(
+#         torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
+#     )
 
-    f1t = f1_toxicity(
-        torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
-    )
-    f1e = f1_emotion(torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels))
+#     f1t = f1_toxicity(
+#         torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
+#     )
+#     f1e = f1_emotion(torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels))
 
-    cmt = confusion_matrix_toxicity(
-        torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
-    )
-    cme = confusion_matrix_emotion(
-        torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
-    )
-    return at, ae, pt, pe, rt, re, f1t, f1e, cmt, cme
+#     cmt = confusion_matrix_toxicity(
+#         torch.tensor(all_toxicity_probs), torch.tensor(all_toxicity_labels)
+#     )
+#     cme = confusion_matrix_emotion(
+#         torch.tensor(all_emotion_probs), torch.tensor(all_emotion_labels)
+#     )
+#     return at, ae, pt, pe, rt, re, f1t, f1e, cmt, cme
 
 
 def select_device(device=""):
@@ -367,82 +367,82 @@ class GridSearch:
                                             epoch,
                                         )
                                     # Evaluate the model on the test set
-                                    print("Evaluating the model on the test set")
-                                    (
-                                        at,
-                                        ae,
-                                        pt,
-                                        pe,
-                                        rt,
-                                        re,
-                                        f1t,
-                                        f1e,
-                                        cmt,
-                                        cme,
-                                    ) = evaluate_fn(model, test_dataloader, self.device)
-                                    print(
-                                        f"""
-Test Accuracy - Toxicity: {at}
-Test Accuracy - Emotion: {ae}
-Test Precision - Toxicity: {pt}
-Test Precision - Emotion: {pe}
-Test Recall - Toxicity: {rt}
-Test Recall - Emotion: {re}
-Test F1 Score - Toxicity: {f1t}
-Test F1 Score - Emotion: {f1e}
+#                                     print("Evaluating the model on the test set")
+#                                     (
+#                                         at,
+#                                         ae,
+#                                         pt,
+#                                         pe,
+#                                         rt,
+#                                         re,
+#                                         f1t,
+#                                         f1e,
+#                                         cmt,
+#                                         cme,
+#                                     ) = evaluate_fn(model, test_dataloader, self.device)
+#                                     print(
+#                                         f"""
+# Test Accuracy - Toxicity: {at}
+# Test Accuracy - Emotion: {ae}
+# Test Precision - Toxicity: {pt}
+# Test Precision - Emotion: {pe}
+# Test Recall - Toxicity: {rt}
+# Test Recall - Emotion: {re}
+# Test F1 Score - Toxicity: {f1t}
+# Test F1 Score - Emotion: {f1e}
 
-"""
-                                    )
+# """
+                                    # )
 
-                                    print("====================================")
-                                    print("Saving the model")
-                                    # Store the scores for this set of hyperparameters
-                                    self.scores.append(
-                                        {
-                                            "epochs": epochs,
-                                            "batch_size": batch,
-                                            "learning_rate": lr,
-                                            "weight_decay": weight_decay,
-                                            "num_layers": layer,
-                                            "dropout": drop,
-                                            "pre_train": pre_trained_language_model,
-                                            "accuracy_toxicity": at,
-                                            "accuracy_emotion": ae,
-                                            "loss_average": sum(losses) / len(losses),
-                                            "toxicity_loss_average": sum(
-                                                toxicity_losses
-                                            )
-                                            / len(toxicity_losses),
-                                            "emotion_loss_average": sum(emotion_losses)
-                                            / len(emotion_losses),
-                                        }
-                                    )
-                                    # Save the scores to a file
-                                    with open(
-                                        f"{BASE_PATH}/logs/scores.json", "w"
-                                    ) as f:
-                                        f.write(str(self.scores))
+                                    # print("====================================")
+                                    # print("Saving the model")
+                                    # # Store the scores for this set of hyperparameters
+                                    # self.scores.append(
+                                    #     {
+                                    #         "epochs": epochs,
+                                    #         "batch_size": batch,
+                                    #         "learning_rate": lr,
+                                    #         "weight_decay": weight_decay,
+                                    #         "num_layers": layer,
+                                    #         "dropout": drop,
+                                    #         "pre_train": pre_trained_language_model,
+                                    #         "accuracy_toxicity": at,
+                                    #         "accuracy_emotion": ae,
+                                    #         "loss_average": sum(losses) / len(losses),
+                                    #         "toxicity_loss_average": sum(
+                                    #             toxicity_losses
+                                    #         )
+                                    #         / len(toxicity_losses),
+                                    #         "emotion_loss_average": sum(emotion_losses)
+                                    #         / len(emotion_losses),
+                                    #     }
+                                    # )
+                                    # # Save the scores to a file
+                                    # with open(
+                                    #     f"{BASE_PATH}/logs/scores.json", "w"
+                                    # ) as f:
+                                    #     f.write(str(self.scores))
 
-                                    # Save graph of the losses
-                                    # show_loss_graph(
-                                    #     losses,
-                                    #     toxicity_losses,
-                                    #     emotion_losses,
-                                    #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # # Save graph of the losses
+                                    # # show_loss_graph(
+                                    # #     losses,
+                                    # #     toxicity_losses,
+                                    # #     emotion_losses,
+                                    # #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # # )
+                                    # # show_emotion_loss_graph(
+                                    # #     emotion_losses,
+                                    # #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # # )
+                                    # # show_toxicity_loss_graph(
+                                    # #     toxicity_losses,
+                                    # #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
+                                    # # )
+                                    # # Save a checkpoint
+                                    # save_checkpoint(
+                                    #     model.state_dict(),
+                                    #     filename=f"checkpoint_{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}.pt",
                                     # )
-                                    # show_emotion_loss_graph(
-                                    #     emotion_losses,
-                                    #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
-                                    # )
-                                    # show_toxicity_loss_graph(
-                                    #     toxicity_losses,
-                                    #     f"{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}",
-                                    # )
-                                    # Save a checkpoint
-                                    save_checkpoint(
-                                        model.state_dict(),
-                                        filename=f"checkpoint_{epochs}_{batch}_{lr}_{weight_decay}_{layer}_{drop}.pt",
-                                    )
 
 
 # def show_loss_graph(losses, toxicity_losses, emotion_losses, title: str):
@@ -587,20 +587,36 @@ def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l
     """
     Log the hyperparameters to a json file
     """
+    print(
+        f"""
+        Hyperparameters:
+        epochs: {epoch}
+        batch_size: {batch_size}
+        learning_rate: {learning_rate}
+        lstm_layers: {lstm_layers}
+        dropout: {dropout}
+
+        applied l2 regularization:
+        Task Emotion: {l2_emotion}
+        Task Toxicity: {l2_toxicity}
+        """)
     from datetime import datetime
     import json
-    with open(f"{BASE_PATH}/logs/hyperparameters.json", "w") as f:
-        json.dump(
-            {
-                "epoch": epoch,
+    try:
+        with open(f"{BASE_PATH}/logs/hyperparameters.json", "r") as f:
+            prev = json.load(f)
+            prev.append({
+                "epochs": epoch,
                 "batch_size": batch_size,
                 "learning_rate": learning_rate,
                 "lstm_layers": lstm_layers,
                 "dropout": dropout,
                 "l2_emotion": l2_emotion,
                 "l2_toxicity": l2_toxicity,
-                "time_applied": datetime.now().strftime("%Y%m%d%H%M%S"),
-            },
-            f,
-        )
+                "date": datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+            })
+            # json.dump(prev, f)
+    except FileNotFoundError as e:
+        raise e
+
 
