@@ -16,7 +16,7 @@ from utils.utils import (
     save_to_json
     )
 # Load your CSV file
-def grid_search_train():
+def grid_search_train(epochs_options, batch_size_options, dropouts_options, lstm_layers_options):
     df = pd.read_pickle(f'{BASE_PATH}\\dataset\\preprocessed_df_original.pkl')
 
     # Preprocess the data
@@ -47,17 +47,13 @@ def grid_search_train():
     # Load BERT
     bert = TFBertModel.from_pretrained('bert-base-uncased')
 
-    # Hyperparameter gridchatgpt
-    epochs_options = [25,30, 50, 100]
-    batch_size_options = [32, 64]
-    optimizer = 'adam'
-    lstm_layers_options = [(64, 32)]
-    dropouts = [0.4, 0.5]
-    
+    # Initilize optimizer
+    initial_learning_rate = 1e-4
+    optimizer = tf.keras.optimizers.Adam(learning_rate=initial_learning_rate)
     # Grid search
     for epochs in epochs_options:
         for batch_size in batch_size_options:
-            for dropout in dropouts:
+            for dropout in dropouts_options:
                 for lstm_layers in lstm_layers_options:
                     # Model definition inside the loop
                     input_ids = Input(shape=(max_length,), dtype=tf.int32, name='input_ids')
@@ -89,7 +85,7 @@ def grid_search_train():
 
                     # Optionally, save the model or log the results after each iteration
 
-def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dropout, l2_emotion = 0.032, l2_toxicity = 0.028, learning_decay = 0.1, weight_epoch = 5):
+def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dropout, l2_emotion = 0.032, l2_toxicity = 0.028,l2_lstm=0.01, learning_decay = 0.1, weight_epoch = 5):
     def lr_schedule(epoch, lr):
         if epoch % weight_epoch == 0 and epoch != 0:
             return lr * learning_decay
@@ -98,13 +94,13 @@ def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dr
 
     # Define the model checkpoint callback
     model_checkpoint = ModelCheckpoint(
-        filepath=f'{BASE_PATH}/checkpoints/tensorflow/checkpoint_mtm_with_bert_{epochs}_{batch_size}_{learning_rate}_{lstm_layers}_{dropout}.h5',
+        filepath=f'{BASE_PATH}/checkpoints/tensorflow/checkpoint_mtm_with_bert_{epochs}_{batch_size}_{learning_rate}_{lstm_layers}_{dropout}_l2_{l2_lstm}.h5',
         save_best_only=True,
         monitor='val_loss',
         mode='min',
         verbose=1
     )
-    log_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity)
+    log_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity, l2_lstm)
     
     layer_1, layer_2 = lstm_layers, lstm_layers//2
 
@@ -150,7 +146,7 @@ def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dr
     input_ids = Input(shape=(max_length,), dtype=tf.int32, name='input_ids')
     bert_output = bert(input_ids)[0] # type: ignore
 
-    bi_lstm = Bidirectional(LSTM(layer_1, return_sequences=True, dropout=dropout))(bert_output)
+    bi_lstm = Bidirectional(LSTM(layer_1, return_sequences=True, dropout=dropout, kernel_regularizer=l2(l2_lstm)))(bert_output)
     bi_lstm = Bidirectional(LSTM(layer_2, dropout=dropout*0.75))(bi_lstm)
 
     output_emotion = Dense(y_emotion_combined.shape[1], activation='softmax', name='emotion_output', kernel_regularizer=l2(l2_emotion))(bi_lstm)

@@ -87,9 +87,11 @@ def get_parameters_from_config(config_file='default.ini'):
         hyperparameters['learning_rate'] = config.getfloat('Hyperparameters', 'learning_rate')
         hyperparameters['batch_size'] = config.getint('Hyperparameters', 'batch_size')
         hyperparameters['dropout'] = config.getfloat('Hyperparameters', 'dropout')
-        hyperparameters['weight_decay'] = config.getfloat('Hyperparameters', 'weight_decay')
+        hyperparameters['learning_decay'] = config.getfloat('Hyperparameters', 'learning_decay')
         hyperparameters['l2_reg_emotion'] = config.getfloat('Hyperparameters', 'l2_reg_emotion')
         hyperparameters['l2_reg_toxicity'] = config.getfloat('Hyperparameters', 'l2_reg_toxicity')
+        hyperparameters['l2_reg_lstm'] = config.getfloat('Hyperparameters', 'l2_reg_lstm')
+        hyperparameters['weight_epoch'] = config.getint('Hyperparameters', 'weight_epoch')
 
     except configparser.Error as e:
         raise ValueError(f"Error reading hyperparameters from config file: {e}")
@@ -117,10 +119,11 @@ def get_gs_hyperparameters_from_config(config_file='default.ini'):
         hyperparameters['dropout'] = config.get('Grid Search Hyperparameters', 'dropout')
         hyperparameters['num_layers'] = config.get('Grid Search Hyperparameters', 'num_layers')
         hyperparameters['epochs'] = config.get('Grid Search Hyperparameters', 'epochs')
-        hyperparameters['weight_decay'] = config.get('Grid Search Hyperparameters', 'weight_decay')
+        hyperparameters['learning_decay'] = config.get('Grid Search Hyperparameters', 'learning_decay')
         hyperparameters['l2_reg_emotion'] = config.get('Grid Search Hyperparameters', 'l2_reg_emotion')
         hyperparameters['l2_reg_toxicity'] = config.get('Grid Search Hyperparameters', 'l2_reg_toxicity')
-        
+        hyperparameters['l2_reg_lstm'] = config.get('Grid Search Hyperparameters', 'l2_reg_lstm')
+
     except configparser.Error as e:
         raise ValueError(f"Error reading hyperparameters from config file: {e}")
 

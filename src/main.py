@@ -11,7 +11,8 @@ def main(*args):
             if args[0].grid_search:
                 print('Running the model with grid search\n\n')
                 try:
-                    grid_search_train()
+                    # grid_search_train()
+                    pass
                 except Exception as e:
                     raise Exception("Error in running the grid search:", e)
             elif any([getattr(args, attr, None) is not None for attr in ['learning_rate', 'num_layers', 'dropout', 'epochs', 'batch_size', 'l2_reg_emotion', 'l2_reg_toxicity', 'weight_decay', 'weight_epoch']]):
@@ -26,7 +27,8 @@ def main(*args):
                         weight_epoch=args[0].weight_epoch,
                         l2_emotion=args[0].l2_reg_emotion,
                         l2_toxicity=args[0].l2_reg_toxicity,
-                        learning_decay=args[0].learning_decay
+                        learning_decay=args[0].learning_decay,
+                        l2_lstm=args[0].l2_reg_lstm
                     )
                 except Exception as e:
                     raise Exception("Error in running the hyperparameter:", e)
@@ -40,9 +42,11 @@ def main(*args):
                         learning_rate=default_hyperparameters['learning_rate'],
                         lstm_layers=default_hyperparameters['num_layers'],
                         dropout=default_hyperparameters['dropout'],
-                        weight_epoch=default_hyperparameters['weight_decay'],
+                        weight_epoch=default_hyperparameters['weight_epoch'],
                         l2_emotion=default_hyperparameters['l2_reg_emotion'],
-                        l2_toxicity=default_hyperparameters['l2_reg_toxicity']
+                        l2_toxicity=default_hyperparameters['l2_reg_toxicity'],
+                        learning_decay=default_hyperparameters['learning_decay'],
+                        l2_lstm=default_hyperparameters['l2_reg_lstm']
                     )
                 except Exception as e:
                     raise Exception("Error in running the hyperparameter:", e)

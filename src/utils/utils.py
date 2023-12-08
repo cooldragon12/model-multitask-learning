@@ -580,10 +580,10 @@ def save_to_json(scores, filename):
     import json
 
     with open(filename, "w") as f:
-        json.dump(scores, f)
+        json.dump(str(scores), f)
 
 
-def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity):
+def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity, l2_lstm):
     """
     Log the hyperparameters to a json file
     """
@@ -599,6 +599,7 @@ def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l
         applied l2 regularization:
         Task Emotion: {l2_emotion}
         Task Toxicity: {l2_toxicity}
+        LSTM: {l2_lstm}
         """)
     from datetime import datetime
     import json
@@ -613,6 +614,7 @@ def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l
                 "dropout": dropout,
                 "l2_emotion": l2_emotion,
                 "l2_toxicity": l2_toxicity,
+                "l2_lstm": l2_lstm,
                 "date": datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
             })
             # json.dump(prev, f)

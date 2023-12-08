@@ -24,6 +24,7 @@ def get_cli_argument():
     hyperparameter_args.add_argument('-l2e', '--l2-reg-emotion', default=0.03, type=float, help='L2 regularization for emotion (default: 0.03)')
     hyperparameter_args.add_argument('-l2t', '--l2-reg-toxicity', default=0.025, type=float, help='L2 regularization for toxicity (default: 0.025)')
     hyperparameter_args.add_argument('-we', '--weight-epoch', default=5, type=int, help='Weight epoch (default: 5)')
+    hyperparameter_args.add_argument('-l2l', '--l2-reg-lstm', default=0.01, type=float, help='L2 regularization for lstm (default: 0.01)')
     # Check for custom settings flag
     if 'custom' in parser.parse_known_args()[0]:
         args = parser.parse_args()
