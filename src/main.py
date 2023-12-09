@@ -1,4 +1,4 @@
-from utils.config import get_parameters_from_config
+from utils.config import get_gs_hyperparameters_from_config, get_parameters_from_config
 from utils.cli import get_cli_argument
 from train_tensorflow import grid_search_train, train_with_hyperparameter
 
@@ -11,8 +11,20 @@ def main(*args):
             if args[0].grid_search:
                 print('Running the model with grid search\n\n')
                 try:
-                    # grid_search_train()
-                    pass
+                    gs_hyperparameters = get_gs_hyperparameters_from_config()
+                    grid_search_train(
+                        epochs_options= gs_hyperparameters['epochs'],
+                        batch_size_options=gs_hyperparameters['batch_size'],
+                        learning_rate_options=gs_hyperparameters['learning_rate'],
+                        lstm_layers_options=gs_hyperparameters['num_layers'],
+                        dropouts_options=gs_hyperparameters['dropout'],
+                        weight_epoch_options =gs_hyperparameters['weight_epoch'],
+                        l2_emotion_options=gs_hyperparameters['l2_reg_emotion'],
+                        l2_toxicity_options=gs_hyperparameters['l2_reg_toxicity'],
+                        learning_decay_options=gs_hyperparameters['learning_decay'],
+                        l2_lstm_options=gs_hyperparameters['l2_reg_lstm']
+                    )
+                    
                 except Exception as e:
                     raise Exception("Error in running the grid search:", e)
             elif any([getattr(args, attr, None) is not None for attr in ['learning_rate', 'num_layers', 'dropout', 'epochs', 'batch_size', 'l2_reg_emotion', 'l2_reg_toxicity', 'weight_decay', 'weight_epoch']]):

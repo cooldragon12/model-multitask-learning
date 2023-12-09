@@ -1,6 +1,8 @@
 from pathlib import Path
 # from torchmetrics import AUROC, Accuracy, Precision, Recall, F1Score, ConfusionMatrix
 import configparser
+
+
 BASE_PATH = Path(__file__).parent.parent.parent
 """`multi-task model/`"""
 
@@ -114,16 +116,16 @@ def get_gs_hyperparameters_from_config(config_file='default.ini'):
 
     hyperparameters = {}
     try:
-        hyperparameters['learning_rate'] = config.get('Grid Search Hyperparameters', 'learning_rate')
-        hyperparameters['batch_size'] = config.get('Grid Search Hyperparameters', 'batch_size')
-        hyperparameters['dropout'] = config.get('Grid Search Hyperparameters', 'dropout')
-        hyperparameters['num_layers'] = config.get('Grid Search Hyperparameters', 'num_layers')
-        hyperparameters['epochs'] = config.get('Grid Search Hyperparameters', 'epochs')
-        hyperparameters['learning_decay'] = config.get('Grid Search Hyperparameters', 'learning_decay')
-        hyperparameters['l2_reg_emotion'] = config.get('Grid Search Hyperparameters', 'l2_reg_emotion')
-        hyperparameters['l2_reg_toxicity'] = config.get('Grid Search Hyperparameters', 'l2_reg_toxicity')
-        hyperparameters['l2_reg_lstm'] = config.get('Grid Search Hyperparameters', 'l2_reg_lstm')
-
+        hyperparameters['learning_rate'] = config.get('GridSearch', 'learning_rate')
+        hyperparameters['batch_size'] = config.get('GridSearch', 'batch_size')
+        hyperparameters['dropout'] = config.get('GridSearch', 'dropout')
+        hyperparameters['num_layers'] = config.get('GridSearch', 'num_layers')
+        hyperparameters['epochs'] = config.get('GridSearch', 'epochs')
+        hyperparameters['learning_decay'] = config.get('GridSearch', 'learning_decay')
+        hyperparameters['l2_reg_emotion'] = config.get('GridSearch', 'l2_reg_emotion')
+        hyperparameters['l2_reg_toxicity'] = config.get('GridSearch', 'l2_reg_toxicity')
+        hyperparameters['l2_reg_lstm'] = config.get('GridSearch', 'l2_reg_lstm')
+        hyperparameters['weight_epoch'] = config.get('GridSearch', 'weight_epoch')
     except configparser.Error as e:
         raise ValueError(f"Error reading hyperparameters from config file: {e}")
 

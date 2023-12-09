@@ -1,4 +1,5 @@
 from datetime import datetime
+from sympy import hyper
 import tqdm
 import numpy as np
 
@@ -161,22 +162,13 @@ def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l
         """)
     from datetime import datetime
     import json
+    hyperparameters ={"epochs": epoch,"batch_size": batch_size,"learning_rate": learning_rate,"lstm_layers": lstm_layers,"dropout": dropout,"l2_emotion": l2_emotion,"l2_toxicity": l2_toxicity,"l2_lstm": l2_lstm,"date": datetime.now().strftime("%Y-%m-%d-%H:%M:%S")}
+    
     try:
-        with open(f"{BASE_PATH}/logs/hyperparameters.json", "r") as f:
-            prev = json.load(f)
-            prev.append({
-                "epochs": epoch,
-                "batch_size": batch_size,
-                "learning_rate": learning_rate,
-                "lstm_layers": lstm_layers,
-                "dropout": dropout,
-                "l2_emotion": l2_emotion,
-                "l2_toxicity": l2_toxicity,
-                "l2_lstm": l2_lstm,
-                "date": datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-            })
-            # json.dump(prev, f)
-    except FileNotFoundError as e:
-        raise e
+        date = datetime.now().strftime("%Y-%m-%d-%H_%M_%S")
+        with open(f"{BASE_PATH}/logs/{date}_hyperparameters.json", "w") as f:
+            f.write(str(hyperparameters))
+    except FileNotFoundError :
+        raise FileNotFoundError("File not found, {BASE_PATH}/logs/{date}_hyperparameters.json")
 
 
