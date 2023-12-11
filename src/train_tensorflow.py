@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from transformers import BertTokenizer, TFBertModel
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint, EarlyStopping
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, MultiLabelBinarizer
 from keras.models import Model
 from keras.layers import Input, Bidirectional, LSTM, Dense
 from keras.regularizers import l2, l1_l2
@@ -30,6 +30,14 @@ def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dr
         mode='min',
         verbose=1
     )
+    # Early stopping
+    early_stopping = EarlyStopping(
+        monitor='val_loss',
+        mode='min',
+        verbose=1,
+        patience=5
+    )
+    # Log the hyperparameters
     log_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity, l2_lstm)
     
     layer_1, layer_2 = lstm_layers, lstm_layers//2
@@ -61,7 +69,7 @@ def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dr
     y_toxicity_combined = encoder_toxicity.fit_transform(df_combined[['toxicity']])
 
 
-    X_train, X_test, y_train_emotion, y_test_emotion, y_train_toxicity, y_test_toxicity = train_test_split(X, y_emotion_combined,y_toxicity_combined, test_size=0.1) 
+    X_train, X_test, y_train_emotion, y_test_emotion, y_train_toxicity, y_test_toxicity = train_test_split(X, y_emotion_combined,y_toxicity_combined, test_size=0.2) 
     # initilize optimizer
     print("Initiating the optimizer")
     initial_learning_rate = learning_rate
@@ -77,7 +85,7 @@ def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dr
     bert_output = bert(input_ids)[0] # type: ignore
 
     bi_lstm = Bidirectional(LSTM(layer_1, return_sequences=True, dropout=dropout, kernel_regularizer=l2(l2_lstm)))(bert_output)
-    bi_lstm = Bidirectional(LSTM(layer_2, dropout=dropout*0.75))(bi_lstm)
+    bi_lstm = Bidirectional(LSTM(layer_2, dropout=dropout*0.5))(bi_lstm)
 
     output_emotion = Dense(y_emotion_combined.shape[1], activation='softmax', name='emotion_output', kernel_regularizer=l1_l2(l2_emotion,l2_emotion))(bi_lstm)
     output_toxicity = Dense(y_toxicity_combined.shape[1], activation='softmax', name='toxicity_output',kernel_regularizer=l1_l2(l2_toxicity,l2_toxicity))(bi_lstm)
@@ -101,7 +109,7 @@ def train_with_hyperparameter(epochs, batch_size, learning_rate, lstm_layers, dr
     history = model.fit(
         X_train, {'emotion_output': y_train_emotion, 'toxicity_output': y_train_toxicity}, 
         validation_data=(X_test, {'emotion_output': y_test_emotion, 'toxicity_output': y_test_toxicity}), 
-        epochs=epochs, batch_size=batch_size, callbacks=[lr_scheduler, model_checkpoint])
+        epochs=epochs, batch_size=batch_size, callbacks=[lr_scheduler, model_checkpoint, early_stopping])
     print("Saving the model......")
     model.save(f'bi_lstm_bert_model_{epochs}_{batch_size}_adam_{dropout}_{layer_1}_{layer_2}_l1l2_{l2_emotion}_{l2_toxicity}.h5')
     # Show the results

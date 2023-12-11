@@ -1,0 +1,12 @@
+{
+ "epochs": 11,
+ "batch_size": 64,
+ "learning_rate": 0.0001,
+ "lstm_layers": 42,
+ "dropout": 0.6,
+ "l2_emotion": 0.095,
+ "l2_toxicity": 0.085,
+ "l2_lstm": 0.1,
+ "date": "2023-12-09-09:50:08"
+}
+// with l1 l2 regularization *0.5 in l1
