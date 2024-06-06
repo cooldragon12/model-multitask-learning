@@ -1,6 +1,6 @@
 from datetime import datetime
-from sympy import hyper
-import tqdm
+from sklearn.preprocessing import OneHotEncoder
+from transformers import BertTokenizer
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 #     AUROC_emotion,
 #     AUROC_toxicity,
 # )
-from .config import BASE_PATH
+from .config import BASE_PATH, EMOTIONS_LABELS, TOXICITY_LABELS
 
 
 
@@ -142,33 +142,49 @@ def save_to_json(scores, filename):
         json.dump(str(scores), f)
 
 
-def log_hyperparameter(epoch, batch_size, learning_rate, lstm_layers, dropout, l2_emotion, l2_toxicity, l2_lstm):
+def log_hyperparameter(**kwargs):
     """
     Log the hyperparameters to a json file
     """
-    print(
-        f"""
-        Hyperparameters:
-        epochs: {epoch}
-        batch_size: {batch_size}
-        learning_rate: {learning_rate}
-        lstm_layers: {lstm_layers}
-        dropout: {dropout}
 
-        applied l2 regularization:
-        Task Emotion: {l2_emotion}
-        Task Toxicity: {l2_toxicity}
-        LSTM: {l2_lstm}
-        """)
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
     from datetime import datetime
-    import json
-    hyperparameters ={"epochs": epoch,"batch_size": batch_size,"learning_rate": learning_rate,"lstm_layers": lstm_layers,"dropout": dropout,"l2_emotion": l2_emotion,"l2_toxicity": l2_toxicity,"l2_lstm": l2_lstm,"date": datetime.now().strftime("%Y-%m-%d-%H:%M:%S")}
     
     try:
         date = datetime.now().strftime("%Y-%m-%d-%H_%M_%S")
         with open(f"{BASE_PATH}/logs/{date}_hyperparameters.json", "w") as f:
-            f.write(str(hyperparameters))
+            f.write(str(kwargs))
     except FileNotFoundError :
         raise FileNotFoundError("File not found, {BASE_PATH}/logs/{date}_hyperparameters.json")
 
+# for running the model
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
+max_length = 65  # Adjust as needed
+
+def encode_texts(text):
+    return tokenizer.encode(text,add_special_tokens=True, 
+                                                max_length=65, 
+                                                padding='max_length', 
+                                                return_attention_mask=False,
+                                                # truncation=True,
+                                                return_tensors='tf')
+class Decoder:
+    def __init__(self, data_path_name):
+        import pandas as pd
+        df = pd.read_pickle(f'{BASE_PATH}\\dataset\\{data_path_name}')
+        self.encoder_emotion = OneHotEncoder(sparse_output=False)
+        self.encoder_toxicity = OneHotEncoder(sparse_output=False)
+
+        self.encoder_emotion.fit_transform(df[['emotion']])
+        self.encoder_toxicity.fit_transform(df[['toxicity']])
+    
+    # Decoding one-hot encoded labels
+    
+    def decode_toxicity(self,pred):
+        return self.encoder_toxicity.inverse_transform(pred)
+    
+    def decode_emotion(self,pred):
+        return self.encoder_emotion.inverse_transform(pred)

@@ -9,9 +9,10 @@ def get_cli_argument():
     parser.add_argument('-w', '--where', choices=['pytorch', 'tensorflow'], default='tensorflow', help='Where to run the model (default: tensorflow)')
     parser.add_argument('-t', '--train', action='store_true', help='Train the model')
     parser.add_argument('-dp', '--data-path', default='dataset/preprocessed_df.pkl', help='Path to the preprocessed dataframe')
+    parser.add_argument('-e', '--evaluate', action='store_true',default=False, help='Evaluate the model')
     parser.add_argument('-r', '--run', action='store_true', help='Try the model')
-    parser.add_argument('-e', '--evaluate', action='store_true', help='Evaluate the model')
     parser.add_argument('-gs', '--grid-search', action='store_true', help='Run the grid search using the hyperparameter from: src/utils/config.py')
+    parser.add_argument('-kf', '--k-fold', action='store_true', help='Run train with config default and k-fold it: src/utils/config.py')
 
     sub_custom_parser = parser.add_subparsers(title='Custom Settings', help='Run the model with custom hyperparameters')
     hyperparameter_args = sub_custom_parser.add_parser('custom', help='Run the model with custom hyperparameters')

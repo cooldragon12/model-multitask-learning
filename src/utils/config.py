@@ -94,7 +94,7 @@ def get_parameters_from_config(config_file='default.ini'):
         hyperparameters['l2_reg_toxicity'] = config.getfloat('Hyperparameters', 'l2_reg_toxicity')
         hyperparameters['l2_reg_lstm'] = config.getfloat('Hyperparameters', 'l2_reg_lstm')
         hyperparameters['weight_epoch'] = config.getint('Hyperparameters', 'weight_epoch')
-
+        hyperparameters['k_fold'] = config.getint('Hyperparameters', 'k_fold')
     except configparser.Error as e:
         raise ValueError(f"Error reading hyperparameters from config file: {e}")
 

@@ -1,0 +1,12 @@
+{
+ "epochs": 30,
+ "batch_size": 70,
+ "learning_rate": 0.0001,
+ "lstm_layers": 42,
+ "dropout": 0.69,
+ "l2_emotion": 0.085,
+ "l2_toxicity": 0.09,
+ "l2_lstm": 0.01,
+ "date": "2023-12-11-17:58:25",
+ "description": "With bilstm for each task, and added weight to toxicity loss."
+}
